@@ -66,9 +66,13 @@ Notes:
 - predefined objects are stored in the global structures
 `EN_CONSTANT` and `MSX_CONSTANT`. Thus functions that require the
 input of an object must be called as can be observed in the example below:
+
     [errcode,value]=ENgetlinkvalue(index,EN_CONSTANT.EN_LENGTH);
+
 The prefix of `EN_CONSTANT.` or `MSX_CONSTANT.` is required for all object inputs even though this is not indicated in the help files. The help file for the above example would only say:
+
     [errcode,value]=ENgetlinkvalue(index,EN_LENGTH);
+
 Alternatively, numeric codes can be used as indicated in the help files.
 
 - index numbers and id (names) of nodes, links, species etc. do not necessarily coincide.
