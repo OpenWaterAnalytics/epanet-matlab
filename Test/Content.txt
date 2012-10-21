@@ -1,0 +1,17 @@
+Content:
+
+exampe.m - This example uses the network file Net2.inp and the
+            msx file net2-cl2.msx % (distributed with the MSX toolkit as
+            example 2) % to plot the CL2 data of node 1, linke 1, node 17
+            and link 17.
+
+The Toolkit example includes EPANET and MSX functionality and
+is based on example 2 of the MSX package:
+Net2.inp - Network
+            input file used for EPANET and MSX toolkit test and example.
+net2-cl2.msx - MSX input file used for MSX toolkit test and
+                example.
+
+Test functions for toolkit functions
+ENwraptest.m    - Tests all the existing Matlab wrappers for the EPANET toolkit functions.
+MSXwraptest.m   - Tests all the existing Matlab wrappers for the MSX toolkit functions.

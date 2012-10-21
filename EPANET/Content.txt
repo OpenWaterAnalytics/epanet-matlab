@@ -1,0 +1,114 @@
+EPANET-Toolkit Functions by Task
+For reference see: EPANET programmer's toolkit Windows help file.
+Report bugs, inconsistencies, or errors to Feng Shang or Jim Uber
+
+Initialization
+ENMatlabSetup       - Opens the EPANET DLL library and sets global variables required by the Matlab Epanet Toolkit
+ENMatlabCleanup	    - Closes the EPANET DLL library
+
+Opening and closing the EPANET Toolkit system
+ENopen              - Opens the Toolkit to analyze a particular distribution system.
+ENclose             - Closes down the Toolkit system (including all files being processed).
+
+
+Retrieving information about network nodes
+ENgetnodeindex      - Retrieves the index of a node with a specified ID.
+ENgetnodeid         - Retrieves the ID label of a node with a specified index.
+ENgetnodetype       - Retrieves the node-type code for a specific node.
+ENgetnodevalue      - Retrieves the value of a specific link parameter.
+
+
+Retrieving information about network links
+ENgetlinkindex      - Retrieves the ID label of a link with a specified index.
+ENgetlinkid         - Retrieves the ID label of a link with a specified index.
+ENgetlinktype       - Retrieves the link-type code for a specific link.
+ENgetlinknodes      - Retrieves the indexes of the end nodes of a specified link.
+ENgetlinkvalue      - Retrieves the value of a specific link parameter.
+
+
+Retrieving information about time patterns
+ENgetpatternid      - Retrieves the ID label of a particular time pattern.
+ENgetpatternindex   - Retrieves the index of a particular time pattern.
+ENgetpatternlen     - Retrieves the number of time periods in a specific time pattern.
+ENgetpatternvalue   - Retrieves the multiplier factor for a specific time period in a time pattern.
+
+
+Retrieving other network information
+ENgetcontrol        -   Retrieves the parameters of a simple control statement. 
+                    The index of the control is specified in cindex and the remaining arguments return the control's 
+                    parameters.
+ENgetqualtype       - Retrieves the type of water quality analysis called for.
+ENgetoption         - Retrieves the value of a particular analysis option.
+
+
+
+Setting new values for network parameters
+ENsetcontrol        - Sets the parameters of a simple control statement.
+ENsetnodevalue      - Sets the value of a parameter for a specific node.
+ENsetlinkvalue      - Sets the value of a parameter for a specific link.
+ENaddpattern        - Adds a new time pattern to the network.
+ENsetpattern        - Sets all of the multiplier factors for a specific time pattern.
+ENsetpatternvalue   - Sets the multiplier factor for a specific period within a time pattern.
+ENsetqualtype       - Sets the type of water quality analysis called for.
+ENsettimeparam      - Sets the value of a time parameter.
+ENsetoption         - Sets the value of a particular analysis option.
+
+
+Saving and using hydraulic analysis results files
+ENsavehydfile       - Saves the current contents of the binary hydraulics file to a file.
+ENusehydfile        - Uses the contents of the specified file as the current binary hydraulics file.
+
+
+
+Running a hydraulic analysis
+ENsolveH            - Runs a complete hydraulic simulation with results
+                    for all time periods written to the binary Hydraulics file.
+ENopenH             - Opens the hydraulics analysis system.
+ENinitH             - Initializes storage tank levels, link status and settings, and 
+                    the simulation clock time prior to running a hydraulic analysis.
+ENrunH              - Runs a single period hydraulic analysis, retrieving the current simulation clock time t.
+ENnextH             - Determines the length of time until the next hydraulic event 
+                    occurs in an extended period simulation.
+ENcloseH            - Closes the hydraulic analysis system, freeing all allocated memory.
+
+
+Running a water quality analysis
+ENsolveQ            - Runs a complete water quality simulation with results at uniform 
+                    reporting intervals written to EPANET's binary Output file.
+ENopenQ             - Opens the water quality analysis system.
+ENinitQ             - Initializes water quality and the simulation clock time prior to 
+                    running a water quality analysis.
+ENrunQ              - Makes available the hydraulic and water quality results that 
+                    occur at the start of the next time period of a water quality analysis, where the start of the 
+                    period is returned in t.
+ENnextQ             - Advances the water quality simulation to the start of the next hydraulic time period.
+ENstepQ             - Advances the water quality simulation one water quality time step. 
+                    The time remaining in the overall simulation is returned in tleft.
+ENcloseQ            - Closes the water quality analysis system, freeing all allocated memory.
+
+
+Generating an output report
+ENsaveH             - Transfers results of a hydraulic simulation from the binary 
+                    Hydraulics file to the binary Output file, where results are only reported at uniform reporting 
+                    intervals.
+ENsaveinpfile       - Writes all current network input data to a file using the format of an EPANET input file.
+ENreport            - Writes a formatted text report on simulation results to the Report file.
+ENresetreport       - Clears any report formatting commands that either appeared in the 
+                    [REPORT] section of the EPANET Input file or were issued with the ENsetreport function.
+ENsetreport         - Issues a report formatting command. Formatting commands are the 
+                    same as used in the [REPORT] section of the EPANET Input file.
+ENsetstatusreport   - Sets the level of hydraulic status reporting.
+ENgeterror          - Retrieves the text of the message associated with a particular error or warning code.
+ENwriteline         - Writes a line of text to the EPANET report file.
+
+
+General functions
+ENerror             - Prints out the error message string associated with error number errcode
+ENgetflowunits      - Retrieves a code number indicating the units used to express all flow rates.
+ENgetcount          - Retrieves the number of network components of a specified type. 
+
+
+Matlab specific functions
+ENgetalllinknodes   - Gets the node indices associated with all network links
+ENgetnetsize        -  Retreive number of network components
+ENgetversion        - Retrieves the EPANET code version

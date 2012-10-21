@@ -1,0 +1,320 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN">
+<html xmlns:mwsh="http://www.mathworks.com/namespace/mcode/v1/syntaxhighlight.dtd">
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+      <!--
+This HTML is auto-generated from an M-file.
+To make changes, update the M-file and republish this document.
+      -->
+      <title>NetworkMovie</title>
+      <meta name="generator" content="MATLAB 7.4">
+      <meta name="date" content="2009-05-09">
+      <meta name="m-file" content="NetworkMovie"><style>
+
+body {
+  background-color: white;
+  margin:10px;
+}
+
+h1 {
+  color: #990000; 
+  font-size: x-large;
+}
+
+h2 {
+  color: #990000;
+  font-size: medium;
+}
+
+/* Make the text shrink to fit narrow windows, but not stretch too far in 
+wide windows. */ 
+p,h1,h2,div.content div {
+  max-width: 600px;
+  /* Hack for IE6 */
+  width: auto !important; width: 600px;
+}
+
+pre.codeinput {
+  background: #EEEEEE;
+  padding: 10px;
+}
+@media print {
+  pre.codeinput {word-wrap:break-word; width:100%;}
+} 
+
+span.keyword {color: #0000FF}
+span.comment {color: #228B22}
+span.string {color: #A020F0}
+span.untermstring {color: #B20000}
+span.syscmd {color: #B28C00}
+
+pre.codeoutput {
+  color: #666666;
+  padding: 10px;
+}
+
+pre.error {
+  color: red;
+}
+
+p.footer {
+  text-align: right;
+  font-size: xx-small;
+  font-weight: lighter;
+  font-style: italic;
+  color: gray;
+}
+
+  </style></head>
+   <body>
+      <div class="content">
+         <h2>Contents</h2>
+         <div>
+            <ul>
+               <li><a href="#2">Synopsis</a></li>
+               <li><a href="#3">Helpful Notes:</a></li>
+               <li><a href="#4">Arguments</a></li>
+            </ul>
+         </div><pre class="codeinput"><span class="keyword">function</span> [] = NetworkMovie(V,L,fig,movfname,quality,fps,InpFname,<span class="keyword">...</span>
+    PData,SData)
+</pre><h2>Synopsis<a name="2"></a></h2>
+         <p>NetworkMovie uses NetworkFrame() to plot the network graph on figure handle fig with nodes and links colored by V,L, and store
+            the animation as an *.avi movie.  For detailed descriptions of the PData and SData arguments, see NetworkFrame().
+         </p>
+         <p>After the first frame is plotted (using NetworkFrame()), control is passed to the standard input, and during this time you
+            can use the standard Matlab figure UI controls to modify the figure view as you desire (e.g., zoom, pan).  After the network
+            view is how you want it, the rest of the frames are generated consistent with that view.
+         </p>
+         <h2>Helpful Notes:<a name="3"></a></h2>
+         <div>
+            <ul>
+               <li>Do not move or obscure the figure window after you position it and the figure within, when the movie frames are being rendered.
+                   Otherwise you will have whatever junk covers the figure window in your movie.  If you actually resize the figure window once
+                  the movie frames are being rendered, you'll get an error message.
+               </li>
+               <li>To increase your resolution try increasing the physical size of the figure window.  Remember that what you see will be what
+                  you get.
+               </li>
+               <li>If a problem occurs when rendering the frames then Matlab seems to stubbornly hang onto the *.avi movie file handle despite,
+                  for example, issuing fclose('all').  The fix is 'clear all' and then you'll be able to either delete or rewrite the same *.avi
+                  filename without shutting down matlab first.
+               </li>
+               <li>The exampleMovie.m (or exampleMovie.html) code shows a complete example of how to create a movie of Epanet or MSX simulation
+                  data, and for standard use you should be able to modify some of those parameters for your application.
+               </li>
+            </ul>
+         </div>
+         <h2>Arguments<a name="4"></a></h2><pre>V           (nnodes x nframes) matrix of node values to plot
+L           (nlinks x nframes) matrix of link values to plot
+            Either of V or L can be blank, in which case behavior is as
+            described in NetworkFrame().
+fig         Existing figure handle to use.  If [] then new figure is
+            created.
+movfname    AVI filename to store movie.  If [] then no movie is made,
+            but the animation is displayed.
+quality     0-100 quality of AVI movie
+fps         frames per second of AVI movie
+InpFname    Epanet input file name describing network geometry.
+PData       PData structure of plot options as described in
+            NetworkFrame().
+SData       SData structure of plot symbols as described in
+            NetworkFrame().</pre><p>Jim Uber 8/15/2005 4/10/2009 modified</p><pre class="codeinput">nframes = 0;
+<span class="keyword">if</span> isempty(V)
+    colorV=false;
+<span class="keyword">else</span>
+    colorV=true;
+    nframes = length(V(1,:));
+<span class="keyword">end</span>
+<span class="keyword">if</span> isempty(L)
+    colorL=false;
+<span class="keyword">else</span>
+    colorL=true;
+    nframes = length(L(1,:));
+<span class="keyword">end</span>
+
+<span class="keyword">if</span> colorV &amp;&amp; colorL
+    <span class="keyword">if</span> length(V(1,:)) ~= length(L(1,:))
+        disp <span class="string">'Number of frames in V and L must agree.'</span>
+        <span class="keyword">return</span>
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+makeavi = ~isempty(movfname);
+
+<span class="comment">% Figure props</span>
+<span class="keyword">if</span> isempty(fig)
+    fig=figure;
+    axis <span class="string">equal</span>;
+    axis <span class="string">off</span>;
+<span class="comment">%    set(fig,'Color',[0 0 0]);</span>
+<span class="keyword">else</span>
+    figure(fig);
+<span class="keyword">end</span>
+<span class="keyword">if</span> makeavi
+    mov = avifile(movfname,<span class="string">'quality'</span>,quality,<span class="string">'fps'</span>,fps,<span class="string">'compression'</span>,<span class="string">'Cinepak'</span>);
+<span class="keyword">end</span>
+
+<span class="comment">% Draw the first frame and stop to allow user adjustment of figure window</span>
+v = [];
+l = [];
+<span class="keyword">if</span> colorV, v=V(:,1); <span class="keyword">end</span>
+<span class="keyword">if</span> colorL, l=L(:,1); <span class="keyword">end</span>
+[NData,fig] = NetworkFrame(fig,v,l,InpFname,PData,SData,[]);
+disp <span class="string">'Adjust figure window properties as desired, and press any key to continue'</span>
+pause;
+<span class="keyword">if</span> makeavi
+    M=getframe(fig);
+    mov = addframe(mov,M);
+<span class="keyword">else</span>
+    drawnow;
+<span class="keyword">end</span>
+
+<span class="comment">% Draw the rest</span>
+<span class="keyword">for</span> i=2:nframes
+    <span class="keyword">if</span> colorV, v=V(:,i); <span class="keyword">end</span>
+    <span class="keyword">if</span> colorL, l=L(:,i); <span class="keyword">end</span>
+    [NData,fig] = NetworkFrame(fig,v,l,InpFname,PData,SData,NData);
+    <span class="keyword">if</span> makeavi
+        M=getframe(fig);
+        mov = addframe(mov,M);
+    <span class="keyword">else</span>
+        drawnow;
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="keyword">if</span> makeavi
+    mov = close(mov);
+<span class="keyword">end</span>
+</pre><p class="footer"><br>
+            Published with MATLAB&reg; 7.4<br></p>
+      </div>
+      <!--
+##### SOURCE BEGIN #####
+function [] = NetworkMovie(V,L,fig,movfname,quality,fps,InpFname,...
+    PData,SData)
+%% Synopsis
+% NetworkMovie uses NetworkFrame() to plot the network graph on figure
+% handle fig with nodes and links colored by V,L, and store the animation
+% as an *.avi movie.  For detailed descriptions of the PData and SData
+% arguments, see NetworkFrame().
+%
+% After the first frame is plotted (using NetworkFrame()), control is
+% passed to the standard input, and during this time you can use the
+% standard Matlab figure UI controls to modify the figure view as you
+% desire (e.g., zoom, pan).  After the network view is how you want it, the
+% rest of the frames are generated consistent with that view.
+%
+%% Helpful Notes: 
+% * Do not move or obscure the figure window after you position it
+% and the figure within, when the movie frames are
+% being rendered.  Otherwise you will have whatever junk covers the figure
+% window in your movie.  If you actually resize the figure window once the
+% movie frames are being rendered, you'll get an error message.
+% * To increase your resolution try increasing the physical size of the
+% figure window.  Remember that what you see will be what you get.
+% * If a problem occurs when rendering the frames then Matlab seems to
+% stubbornly hang onto the *.avi movie file handle despite, for example,
+% issuing fclose('all').  The fix is 'clear all' and then you'll be able to
+% either delete or rewrite the same *.avi filename without shutting down
+% matlab first.
+% * The exampleMovie.m (or exampleMovie.html) code shows a complete example
+% of how to create a movie of Epanet or MSX simulation data, and for
+% standard use you should be able to modify some of those parameters for
+% your application.
+%
+%% Arguments
+%  V           (nnodes x nframes) matrix of node values to plot
+%  L           (nlinks x nframes) matrix of link values to plot
+%              Either of V or L can be blank, in which case behavior is as
+%              described in NetworkFrame().
+%  fig         Existing figure handle to use.  If [] then new figure is 
+%              created.
+%  movfname    AVI filename to store movie.  If [] then no movie is made,
+%              but the animation is displayed.
+%  quality     0-100 quality of AVI movie
+%  fps         frames per second of AVI movie
+%  InpFname    Epanet input file name describing network geometry.
+%  PData       PData structure of plot options as described in
+%              NetworkFrame().
+%  SData       SData structure of plot symbols as described in
+%              NetworkFrame().
+%
+% Jim Uber
+% 8/15/2005
+% 4/10/2009 modified
+
+nframes = 0;
+if isempty(V)
+    colorV=false;
+else
+    colorV=true;
+    nframes = length(V(1,:));
+end
+if isempty(L)
+    colorL=false;
+else
+    colorL=true;
+    nframes = length(L(1,:));
+end
+
+if colorV && colorL
+    if length(V(1,:)) ~= length(L(1,:))
+        disp 'Number of frames in V and L must agree.'
+        return
+    end
+end
+
+makeavi = ~isempty(movfname);
+
+% Figure props
+if isempty(fig)
+    fig=figure;
+    axis equal;
+    axis off;
+%    set(fig,'Color',[0 0 0]);
+else
+    figure(fig);
+end
+if makeavi
+    mov = avifile(movfname,'quality',quality,'fps',fps,'compression','Cinepak');
+end
+
+% Draw the first frame and stop to allow user adjustment of figure window
+v = [];
+l = [];
+if colorV, v=V(:,1); end
+if colorL, l=L(:,1); end
+[NData,fig] = NetworkFrame(fig,v,l,InpFname,PData,SData,[]);
+disp 'Adjust figure window properties as desired, and press any key to continue'
+pause;
+if makeavi
+    M=getframe(fig);
+    mov = addframe(mov,M);
+else
+    drawnow;
+end
+
+% Draw the rest
+for i=2:nframes
+    if colorV, v=V(:,i); end
+    if colorL, l=L(:,i); end
+    [NData,fig] = NetworkFrame(fig,v,l,InpFname,PData,SData,NData);
+    if makeavi
+        M=getframe(fig);
+        mov = addframe(mov,M);
+    else
+        drawnow;
+    end
+end
+
+if makeavi
+    mov = close(mov);
+end
+
+##### SOURCE END #####
+-->
+   </body>
+</html>

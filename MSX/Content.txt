@@ -1,0 +1,49 @@
+MSX Toolkit Functions
+For reference see: EPANET programmer's toolkit Windows help file, and EPANET/MSX User's Guide
+Report bugs, inconsistencies, or errors to Feng Shang or Jim Uber
+
+Initialization
+MSXMatlabSetup  - Opens the MSX DLL library and sets global variables required by the Matlab MSX Toolkit
+MSXMatlabCleanup.m - Closes the MSX DLL library
+
+MSXopen         - Opens the EPANET-MSX toolkit system.
+MSXclose        - Closes the EPANET-MSX toolkit system.
+MSXsolveH       - Solves for system hydraulics over the entire simulation period,
+                saving results to an internal scratch file.
+MSXusehydfile   - Uses a previously saved EPANET hydraulics file as the source of hydraulic information.
+MSXsolveQ       - Solves for water quality over the entire simulation period and
+                saves the results to an internal scratch file.
+MSXinit         -  Initializes the MSX system before solving for water quality results in a step-wise fashion.
+MSXstep         -  Advances the water quality solution through a single water quality time
+                step when performing a step-wise simulation.
+MSXsaveoutfile  - Saves water quality results computed for each node,
+                link and reporting time period to a named binary file.
+MSXsavemsxfile  - Saves the data associated with the current MSX project into a new MSX input file.
+MSXreport       - Writes water quality simulations results as instructed by the MSX input file to a text file.
+MSXgetindex     - Retrieves the internal index number of an MSX object given its ID name.
+MSXgetIDlen     -  Retrieves the number of characters in the ID name of an MSX object given its internal index number. 
+MSXgetID        - Retrieves the ID name of an MSX object given its internal index number.
+MSXgetcount     - Retrieves the number of objects of a specific type.
+MSXgetspecies   - Retrieves the attributes of a chemical species given its internal index number.
+MSXgetinitqual  -  Retrieves the initial concentration of a particular chemical species assigned
+                to a specific node or link of the pipe network.
+MSXgetqual      - Retrieves the concentration of a chemical species at a specific
+                node or link of the network at the current simulation time step.
+MSXgetconstant  - Retrieves the value of a particular reaction constant.
+MSXgetparameter - Retrieves the value of a particular reaction parameter for a
+                given pipe or tank within the pipe network.
+MSXgetsource    - Retrieves information on any external source of a particular
+                chemical species assigned to a specific node of the pipe network.
+MSXgetpatternlen    - Retrieves the number of time periods within a source time pattern.
+MSXgetpatternvalue  - Retrieves the multiplier at a specific time period for a given source time pattern.
+MSXgeterror     - Returns the text for an error message given its error code.
+MSXsetconstant  - Assigns a new value to a specific reaction constant.
+MSXsetparameter - Assigns a value to a particular reaction parameter for a given pipe or tank within the pipe network. 
+MSXsetinitqual  - Assigns an initial concentration of a particular chemical species
+                to a specific node or link of the pipe network.
+MSXsetsource    - Sets the attributes of an external source of a particular chemical
+                species to a specific node of the pipe network.
+MSXsetpattern   - Assigns a new set of multipliers to a given MSX source time pattern.
+MSXsetpatternvalue  - Assigns a new value to the multiplier for a specific time period
+                    in a given MSX source time pattern.
+MSXaddpattern   - Adds a new, empty MSX source time pattern to the project.

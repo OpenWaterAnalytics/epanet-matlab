@@ -1,0 +1,210 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN">
+<html xmlns:mwsh="http://www.mathworks.com/namespace/mcode/v1/syntaxhighlight.dtd">
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+      <!--
+This HTML is auto-generated from an M-file.
+To make changes, update the M-file and republish this document.
+      -->
+      <title>How to Make an AVI Movie of Your EPANET or EPANET-MSX Simulation</title>
+      <meta name="generator" content="MATLAB 7.4">
+      <meta name="date" content="2009-05-15">
+      <meta name="m-file" content="exampleMovie"><style>
+
+body {
+  background-color: white;
+  margin:10px;
+}
+
+h1 {
+  color: #990000; 
+  font-size: x-large;
+}
+
+h2 {
+  color: #990000;
+  font-size: medium;
+}
+
+/* Make the text shrink to fit narrow windows, but not stretch too far in 
+wide windows. */ 
+p,h1,h2,div.content div {
+  max-width: 600px;
+  /* Hack for IE6 */
+  width: auto !important; width: 600px;
+}
+
+pre.codeinput {
+  background: #EEEEEE;
+  padding: 10px;
+}
+@media print {
+  pre.codeinput {word-wrap:break-word; width:100%;}
+} 
+
+span.keyword {color: #0000FF}
+span.comment {color: #228B22}
+span.string {color: #A020F0}
+span.untermstring {color: #B20000}
+span.syscmd {color: #B28C00}
+
+pre.codeoutput {
+  color: #666666;
+  padding: 10px;
+}
+
+pre.error {
+  color: red;
+}
+
+p.footer {
+  text-align: right;
+  font-size: xx-small;
+  font-weight: lighter;
+  font-style: italic;
+  color: gray;
+}
+
+  </style></head>
+   <body>
+      <div class="content">
+         <h1>How to Make an AVI Movie of Your EPANET or EPANET-MSX Simulation</h1>
+         <introduction></introduction>
+         <h2>Contents</h2>
+         <div>
+            <ul>
+               <li><a href="#1">Synopsis</a></li>
+               <li><a href="#2">Get the Epanet-MSX Simulation Data</a></li>
+               <li><a href="#3">Specify Movie Parameters</a></li>
+               <li><a href="#4">Write the Movie File</a></li>
+               <li><a href="#5">Show the Movie</a></li>
+            </ul>
+         </div>
+         <h2>Synopsis<a name="1"></a></h2>
+         <p>This example illustrates the use of NetworkMovie and NetworkFrame to animate either a bulk or wall specie, or both, for an
+            Epanet/MSX simulation, and store the result as an *.avi movie
+         </p>
+         <p>Note that the EPANET and MSX Matlab wrappers must be on your Matlab search path.  Matlab will also need to be able to find
+            the epanet and epanet-msx object libraries and header files.
+         </p>
+         <h2>Get the Epanet-MSX Simulation Data<a name="2"></a></h2>
+         <p>This example uses the Net2.inp and net2-cl2.msx data files located in <a href="http://engcvs.uc.edu/repos/EPANET/MATLAB/trunk/src/Test">http://engcvs.uc.edu/repos/EPANET/MATLAB/trunk/src/Test</a>.  Note that an ordinary Epanet simulation can also be used, in which case msxFname='' (see getQualityData for details).
+         </p><pre class="codeinput">msxFname = <span class="string">'../Test/net2-cl2.msx'</span>;
+inpFname = <span class="string">'../Test/Net2.inp'</span>;
+<span class="comment">%   Animate the bulk chlorine specie</span>
+bulkSpecieID = <span class="string">'CL2'</span>;
+<span class="comment">%   There is no wall specie</span>
+wallSpecieID = <span class="string">''</span>;
+<span class="comment">%   Get the simulation data using Epanet or Epanet-MSX</span>
+[V,L,T,errcode] = getQualityData(bulkSpecieID,wallSpecieID,<span class="keyword">...</span>
+    msxFname,inpFname);
+<span class="keyword">if</span> errcode &gt; 100
+    disp <span class="string">'Error in network water quality computations'</span>
+    <span class="keyword">return</span>
+<span class="keyword">end</span>
+</pre><h2>Specify Movie Parameters<a name="3"></a></h2>
+         <p>These parameters are described in NetworkFrame()...</p><pre class="codeinput">fig = [];                   <span class="comment">% Use a new figure window</span>
+movFname = <span class="string">'mymovie.avi'</span>;   <span class="comment">% Movie file name</span>
+quality = 100;              <span class="comment">% 0-100 movie quality (related to data compression)</span>
+fps = 8;                    <span class="comment">% Frame rate - # to display per second</span>
+PData.c = <span class="string">'jet'</span>;            <span class="comment">% colormap - see 'help colormap'</span>
+PData.logtransv = <span class="string">'n'</span>;      <span class="comment">% Do not log transform the data</span>
+PData.vmin = 0;             <span class="comment">% min vertex value for plot color mapping</span>
+PData.vmax = max(max(V));   <span class="comment">% max vertex value</span>
+<span class="comment">% PData.logtransl = 'n';    % We're not plotting link data so these are ignored</span>
+<span class="comment">% PData.lmin = min(min(L));</span>
+<span class="comment">% PData.lmax = max(max(L));</span>
+PData.lwidth = 3;           <span class="comment">% Width of links in points</span>
+PData.vsize = 4;            <span class="comment">% Size of vertices in points (0 == omits verts)</span>
+PData.tsize = 4;            <span class="comment">% Size of tank/reservoir nodes</span>
+PData.legend = <span class="string">'v'</span>;         <span class="comment">% Show a colorbar legend for vertex data</span>
+SData = [];                 <span class="comment">% No special node symbols</span>
+<span class="comment">% SData(1...).ivs = [];             % Node IDs to annotate with special symbols</span>
+<span class="comment">% SData(1...).vsmarker = [];        % Marker symbols</span>
+<span class="comment">% SData(1...).vsmarkersize = [];    % Marker symbol sizes</span>
+<span class="comment">% SData(1...).vsmarkercolor = [];   % Marker symbol colors</span>
+</pre><h2>Write the Movie File<a name="4"></a></h2>
+         <p>NetworkMovie will display the first frame in a figure window and allow you to make adjustments to it (zoom, pan, etc.) before
+            rendering the frames into an AVI movie file.
+         </p><pre class="codeinput">NetworkMovie(V,L,fig,movFname,quality,fps,inpFname,PData,SData);
+</pre><h2>Show the Movie<a name="5"></a></h2>
+         <p>You could display the movie in Matlab as follows, or just use an external viewer...</p><pre class="codeinput"><span class="comment">% mov = aviread(movFname);</span>
+<span class="comment">% h = figure;</span>
+<span class="comment">% axis equal;</span>
+<span class="comment">% movie(h,mov);</span>
+</pre><p class="footer"><br>
+            Published with MATLAB&reg; 7.4<br></p>
+      </div>
+      <!--
+##### SOURCE BEGIN #####
+%% How to Make an AVI Movie of Your EPANET or EPANET-MSX Simulation
+%% Synopsis
+% This example illustrates the use of NetworkMovie and NetworkFrame to
+% animate either a bulk or wall specie, or both, for an Epanet/MSX
+% simulation, and store the result as an *.avi movie
+%
+% Note that the EPANET and MSX Matlab wrappers must be on your Matlab
+% search path.  Matlab will also need to be able to find the epanet and
+% epanet-msx object libraries and header files.
+%% Get the Epanet-MSX Simulation Data
+% This example uses the Net2.inp and net2-cl2.msx data files located in
+% http://engcvs.uc.edu/repos/EPANET/MATLAB/trunk/src/Test.  Note that an
+% ordinary Epanet simulation can also be used, in which case msxFname=''
+% (see getQualityData for details).
+msxFname = '../Test/net2-cl2.msx';
+inpFname = '../Test/Net2.inp';
+%   Animate the bulk chlorine specie
+bulkSpecieID = 'CL2';
+%   There is no wall specie
+wallSpecieID = '';
+%   Get the simulation data using Epanet or Epanet-MSX
+[V,L,T,errcode] = getQualityData(bulkSpecieID,wallSpecieID,...
+    msxFname,inpFname);
+if errcode > 100
+    disp 'Error in network water quality computations'
+    return
+end
+%% Specify Movie Parameters
+% These parameters are described in NetworkFrame()...
+fig = [];                   % Use a new figure window
+movFname = 'mymovie.avi';   % Movie file name
+quality = 100;              % 0-100 movie quality (related to data compression)
+fps = 8;                    % Frame rate - # to display per second
+PData.c = 'jet';            % colormap - see 'help colormap'
+PData.logtransv = 'n';      % Do not log transform the data
+PData.vmin = 0;             % min vertex value for plot color mapping
+PData.vmax = max(max(V));   % max vertex value
+% PData.logtransl = 'n';    % We're not plotting link data so these are ignored
+% PData.lmin = min(min(L));
+% PData.lmax = max(max(L));
+PData.lwidth = 3;           % Width of links in points
+PData.vsize = 4;            % Size of vertices in points (0 == omits verts)
+PData.tsize = 4;            % Size of tank/reservoir nodes
+PData.legend = 'v';         % Show a colorbar legend for vertex data
+SData = [];                 % No special node symbols
+% SData(1...).ivs = [];             % Node IDs to annotate with special symbols
+% SData(1...).vsmarker = [];        % Marker symbols
+% SData(1...).vsmarkersize = [];    % Marker symbol sizes
+% SData(1...).vsmarkercolor = [];   % Marker symbol colors
+
+%% Write the Movie File
+% NetworkMovie will display the first frame in a figure window and allow
+% you to make adjustments to it (zoom, pan, etc.) before rendering the
+% frames into an AVI movie file.
+NetworkMovie(V,L,fig,movFname,quality,fps,inpFname,PData,SData);
+%% Show the Movie
+% You could display the movie in Matlab as follows, or just use 
+% an external viewer...
+
+% mov = aviread(movFname);
+% h = figure;
+% axis equal;
+% movie(h,mov);
+
+##### SOURCE END #####
+-->
+   </body>
+</html>
