@@ -6,7 +6,7 @@ function [errcode, value] = ENgetnodevalue(index, paramcode)
 % Retrieves the value of a specific link parameter.
 % 
 % Arguments:
-% index:	node index
+% index:  node index
 % paramcode:	parameter code (see below)
 % value:	parameter value
 % 
@@ -31,6 +31,19 @@ function [errcode, value] = ENgetnodevalue(index, paramcode)
 % EN_PRESSURE	11	Pressure
 % EN_QUALITY	12	Actual quality
 % EN_SOURCEMASS	13	Mass flow rate per minute of a chemical source 
+%
+% The following parameter codes apply only to storage tank nodes:  
+% EN_INITVOLUME  14  Initial water volume 
+% EN_MIXMODEL  15  Mixing model code (see below) 
+% EN_MIXZONEVOL  16  Inlet/Outlet zone volume in a 2-compartment tank 
+% EN_TANKDIAM  17 Tank diameter 
+% EN_MINVOLUME  18  Minimum water volume 
+% EN_VOLCURVE  19  Index of volume versus depth curve (0 if none assigned) 
+% EN_MINLEVEL  20  Minimum water level 
+% EN_MAXLEVEL  21  Maximum water level 
+% EN_MIXFRACTION  22  Fraction of total volume occupied by the inlet/outlet zone in a 2-compartment tank 
+% EN_TANK_KBULK  23  Bulk reaction rate coefficient 
+%
 % Parameters 9 - 13 (EN_DEMAND through EN_SOURCEMASS) are computed values. The others are input design parameters.
 % 
 % Source types are identified with the following constants:
@@ -41,9 +54,16 @@ function [errcode, value] = ENgetnodevalue(index, paramcode)
 % EN_FLOWPACED	3
 % See [SOURCES] for a description of these source types.
 % 
+% The codes for the various tank mixing model choices are as follows:  
+%  
+% EN_MIX1  0  Single compartment, complete mix model 
+% EN_MIX2 1 Two-compartment, complete mix model 
+% EN_FIFO  2  Plug flow, first in, first out model 
+% EN_LIFO  3  Stacked plug flow, last in, first out model 
+%
 % Values are returned in units which depend on the units used for flow rate in the EPANET input file (see Units of Measurement).
 % 
-% Version 2.00.07 (January 2001)
+% Version 2.00.12 (March 2008)
 
 global ENDLLNAME;
 value=single(0);
